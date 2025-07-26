@@ -102,6 +102,7 @@ export function Terminal() {
     setUsername("");
     setHistory([
       "Welcome to Udoka's Portfolio Terminal!",
+      asciiArt,
       "Type 'help' to see all available commands."
     ]);
     setInput("");
