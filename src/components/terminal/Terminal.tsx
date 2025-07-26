@@ -95,16 +95,16 @@ export function Terminal() {
   const [historyIndex, setHistoryIndex] = useState<number | null>(null);
 
   const clearHistory = () => setHistory([
-    "Welcome to Udoka's Portfolio Terminal!",
-    asciiArt,
-    "Type 'help' to see all available commands."
+    // "Welcome to Udoka's Portfolio Terminal!",
+    // asciiArt,
+    // "Type 'help' to see all available commands."
   ]);
   const restart = () => {
     setUsername("");
     setHistory([
-      "Welcome to Udoka's Portfolio Terminal!",
-      asciiArt,
-      "Type 'help' to see all available commands."
+      // "Welcome to Udoka's Portfolio Terminal!",
+      // asciiArt,
+      // "Type 'help' to see all available commands."
     ]);
     setInput("");
     setColor("#22c55e");
@@ -177,30 +177,46 @@ export function Terminal() {
   };
 
   return (
-    <div className="fixed inset-0 z-50 w-screen h-screen flex flex-col bg-gradient-to-br from-neutral-950 to-neutral-900 p-0 m-0">
+    <div className="fixed inset-0 z-50 w-screen h-screen flex flex-col bg-gradient-to-br from-neutral-950 to-neutral-900 p-0 m-0 overflow-y-auto">
       {showModal && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black/70 z-50">
+        <div className="absolute inset-0 flex items-center justify-center bg-black/80 z-50">
           <form onSubmit={handleModalSubmit} className="bg-neutral-900 rounded-2xl shadow-2xl p-8 flex flex-col gap-4 min-w-[320px] max-w-xs w-full border border-neutral-700">
-            <h2 className="text-xl font-bold text-white">Enter your username</h2>
-            <h2 className="text-sm font-bold text-white/50 mt-[-2px] mb-2">We need this for web analytics and data gathering</h2>
+            <h2 className="text-2xl font-extrabold text-green-400 mb-1 text-center">Welcome to Udoka's Terminal</h2>
+            <p className="text-base text-white/80 text-center">This interactive terminal lets you explore Udoka's portfolio in a fun, chat-like way.<br/>No coding experience needed!</p>
             <input
-              className="p-2 rounded bg-neutral-800 text-white outline-none border border-neutral-700 focus:border-green-400/10"
+              className="p-3 rounded bg-neutral-800 text-white outline-none border border-neutral-700 focus:border-green-400/10 text-lg text-center"
               value={modalInput}
               onChange={e => setModalInput(e.target.value)}
-              placeholder="Your username..."
+              placeholder="Enter a nickname to begin..."
               autoFocus
+              maxLength={24}
+              required
             />
-            <button type="submit" className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded transition">Continue</button>
+            <button
+              type="submit"
+              className="font-bold py-2 px-4 rounded transition text-lg border"
+              style={{
+                borderColor: color,
+                background: color,
+                color: '#fff',
+                boxShadow: `0 0 0 1.5px ${color}33`
+              }}
+            >
+              Start Exploring
+            </button>
+            <div className="text-xs text-white/40 text-center mt-2">No data is collected. This is just for fun!</div>
           </form>
         </div>
       )}
       {!showModal && (
         <div
-          className="rounded-2xl font-mono p-2 sm:p-4 flex flex-col transition-all duration-300 relative w-full h-full min-h-0"
+          className="rounded-2xl font-mono p-2 sm:p-4 flex flex-col transition-all duration-300 relative w-full h-full min-h-0 overflow-y-auto"
           style={{
             height: '100dvh',
             maxHeight: '100dvh',
+            minHeight: 0,
             boxSizing: 'border-box',
+            overflowY: 'auto',
           }}
         >
           <Image
@@ -211,10 +227,61 @@ export function Terminal() {
             sizes="100vw"
             priority
           />
+          <div>
+            <div className="flex flex-col sm:block w-full">
+              <div className="block sm:hidden w-full mb-2">
+                <div
+                  className="mb-2 text-center text-base font-semibold select-none px-2"
+                  style={{ color }}
+                >
+                  Type a command below or click <span className='underline'>Help</span> for options!
+                </div>
+                <button
+                  onClick={() => executeCommand('help')}
+                  className="font-bold py-2 w-full rounded shadow text-base border focus:outline-none"
+                  style={{
+                    borderColor: color,
+                    background: color,
+                    color: '#fff',
+                    boxShadow: `0 0 0 1.5px ${color}33`
+                  }}
+                  title="Show available commands"
+                >
+                  Help
+                </button>
+              </div>
+              <div className="hidden sm:block absolute top-4 right-4 z-20"> 
+                <button
+                  onClick={() => executeCommand('help')}
+                  className="font-bold py-1 px-4 rounded shadow text-base border focus:outline-none"
+                  style={{
+                    borderColor: color,
+                    background: color,
+                    color: '#fff',
+                    boxShadow: `0 0 0 1.5px ${color}33`
+                  }}
+                  title="Show available commands"
+                >
+                  Help
+                </button>
+              </div>
+            </div>
+          </div>
           <div
             className="flex-1 flex flex-col overflow-y-auto custom-scrollbar pr-0 sm:pr-2 relative w-full min-h-0"
-            style={{ zIndex: 1, maxHeight: '100dvh', minHeight: 0 }}
+            style={{
+              zIndex: 1,
+              maxHeight: '100dvh',
+              minHeight: 0,
+              paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+            }}
           >
+            <div
+              className="hidden sm:block mb-2 sm:mb-4 mt-2 text-center text-base sm:text-lg font-semibold select-none px-2"
+              style={{ color }}
+            >
+              Type a command below or click <span className='underline'>Help</span> for options!
+            </div>
             {history.map((line, i) => {
               if (i === 1) {
                 return (
@@ -222,15 +289,17 @@ export function Terminal() {
                     key={i}
                     style={{
                       color,
-                      fontSize: '0.85em',
-                      margin: '32px 0 32px 0',
-                      lineHeight: 1.15,
-                      overflowX: 'hidden',
-                      overflowY: 'hidden',
+                      fontSize: '1.05em',
+                      margin: '40px 0 40px 0',
+                      lineHeight: 1.35,
+                      overflowX: 'auto',
                       whiteSpace: 'pre',
-                      letterSpacing: '0.03em',
+                      letterSpacing: '0.04em',
+                      padding: '16px 0',
+                      fontFamily: 'Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
+                      background: 'transparent',
                     }}
-                    className="block font-mono"
+                    className="block font-mono select-none"
                   >
                     {line}
                   </pre>
@@ -267,17 +336,42 @@ export function Terminal() {
                 </div>
               );
             })}
-            <div className="flex items-center mt-6 mb-4" style={{zIndex:2}}>
-              <span className="mr-2 font-bold text-lg" style={{ color }}>{`visitor@udoka.dev:~$`}</span>
+            <div
+              className="flex flex-col sm:flex-row items-stretch sm:items-center mt-4 sm:mt-6 mb-2 sm:mb-4 gap-2 w-full"
+              style={{ zIndex: 2 }}
+            >
+              <span
+                className="font-bold text-base sm:text-lg mb-1 sm:mb-0 sm:mr-2"
+                style={{ color, minWidth: 0 }}
+              >
+                {`visitor@udoka.dev:~$`}
+              </span>
               <input
-                className="bg-transparent outline-none flex-1 placeholder:text-neutral-400 text-lg"
-                style={{ color }}
+                className="bg-neutral-800/80 rounded px-2 sm:px-3 py-2 outline-none flex-1 placeholder:text-neutral-400 text-base sm:text-lg border transition min-w-0 mb-2 sm:mb-0"
+                style={{ color, borderColor: color, boxShadow: `0 0 0 1.5px ${color}33` }}
                 value={input}
                 onChange={handleInput}
                 onKeyDown={handleKeyDown}
                 autoFocus
-                placeholder={"Type a command..."}
+                placeholder={"Try: help, about, projects, contact, color red..."}
+                aria-label="Type a command and press Enter"
+                maxLength={64}
               />
+              <button
+                onClick={() => executeCommand(input.trim() || 'help')}
+                className="font-bold px-3 sm:px-4 py-2 rounded transition text-base border"
+                style={{
+                  borderColor: color,
+                  background: color,
+                  color: '#fff',
+                  boxShadow: `0 0 0 1.5px ${color}33`
+                }}
+                tabIndex={-1}
+                type="button"
+                aria-label="Run command"
+              >
+                ▶
+              </button>
             </div>
           </div>
         </div>
