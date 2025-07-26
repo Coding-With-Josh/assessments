@@ -195,9 +195,26 @@ export function Terminal() {
         </div>
       )}
       {!showModal && (
-        <div className="rounded-2xl font-mono p-4 h-96 flex flex-col transition-all duration-300 relative h-screen">
-          <Image src={require("@/assets/images/sir-udoka.jpeg")} alt="bg" className="absolute inset-0 w-full h-full object-cover opacity-10 pointer-events-none select-none rounded-2xl" style={{zIndex:0}} />
-          <div className="flex-1 flex flex-col overflow-hidden! custom-scrollbar pr-2 relative" style={{zIndex:1}}>
+        <div
+          className="rounded-2xl font-mono p-2 sm:p-4 flex flex-col transition-all duration-300 relative w-full h-full min-h-0"
+          style={{
+            height: '100dvh',
+            maxHeight: '100dvh',
+            boxSizing: 'border-box',
+          }}
+        >
+          <Image
+            src={require("@/assets/images/sir-udoka.jpeg")}
+            alt="bg"
+            className="absolute inset-0 w-full h-full object-cover opacity-10 pointer-events-none select-none rounded-2xl"
+            style={{ zIndex: 0 }}
+            sizes="100vw"
+            priority
+          />
+          <div
+            className="flex-1 flex flex-col overflow-y-auto custom-scrollbar pr-0 sm:pr-2 relative w-full min-h-0"
+            style={{ zIndex: 1, maxHeight: '100dvh', minHeight: 0 }}
+          >
             {history.map((line, i) => {
               if (i === 1) {
                 return (
