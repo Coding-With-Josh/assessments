@@ -23,8 +23,8 @@ function getCommandOutput(
   quit: () => void,
   toggleTheme: () => void
 ): string {
-  const [name, ...args] = cmd.split(" ");
-  const commandName = name.toLowerCase();
+  const [name, ...args] = cmd.trim().split(" ").map(s => s.toLowerCase());
+  const commandName = name;
   switch (commandName) {
     case "help":
       return [
