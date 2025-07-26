@@ -35,7 +35,7 @@ function getCommandOutput(
       return `I'm Udoka, a Software Engineer!`;
     case "projects":
       return "- Portfolio Terminal\n- E-commerce App\n- Blog Platform";
-    case "experience":
+    case "experience":  
       return "3+ years in web development, React, Next.js, Node.js, and more.";
     case "color":
       if (!args[0]) return "Usage: color [any CSS color]";
