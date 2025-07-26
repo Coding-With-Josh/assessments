@@ -1,0 +1,72 @@
+[
+  {
+    "name": "help",
+    "description": "List all available commands",
+    "type": "builtin"
+  },
+  {
+    "name": "whoami",
+    "description": "Show user info",
+    "type": "builtin"
+  },
+  {
+    "name": "projects",
+    "description": "List projects",
+    "type": "builtin"
+  },
+  {
+    "name": "experience",
+    "description": "Show experience",
+    "type": "builtin"
+  },
+  {
+    "name": "color",
+    "description": "Change terminal text color. Usage: color [any CSS color]",
+    "type": "builtin"
+  },
+  {
+    "name": "clear",
+    "description": "Clear the terminal screen",
+    "type": "builtin"
+  },
+  {
+    "name": "cls",
+    "description": "Clear the terminal screen (alias for clear)",
+    "type": "builtin"
+  },
+  {
+    "name": "restart",
+    "description": "Restart the terminal session",
+    "type": "builtin"
+  },
+  {
+    "name": "quit",
+    "description": "Exit the terminal (close the site)",
+    "type": "builtin"
+  },
+  {
+    "name": "about",
+    "description": "Show about info",
+    "type": "builtin"
+  },
+  {
+    "name": "contact",
+    "description": "Show contact info",
+    "type": "builtin"
+  },
+  {
+    "name": "social",
+    "description": "Show social links",
+    "type": "builtin"
+  },
+  {
+    "name": "skills",
+    "description": "Show skills",
+    "type": "builtin"
+  },
+  {
+    "name": "theme",
+    "description": "Toggle light/dark theme",
+    "type": "builtin"
+  }
+]
