@@ -24,7 +24,8 @@ function getCommandOutput(
   toggleTheme: () => void
 ): string {
   const [name, ...args] = cmd.split(" ");
-  switch (name) {
+  const commandName = name.toLowerCase();
+  switch (commandName) {
     case "help":
       return [
         "Available commands:",
