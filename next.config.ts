@@ -8,38 +8,6 @@ const nextConfig: NextConfig = {
   "eslint": {
     "ignoreDuringBuilds": true
   },
-  "images": {
-    "unoptimized": true,
-    "remotePatterns": [
-      {
-        "protocol": "https",
-        "hostname": "avatars.githubusercontent.com",
-        "port": "",
-        "pathname": "/**"
-      },
-      {
-        "protocol": "https",
-        "hostname": "raw.githubusercontent.com",
-        "port": "",
-        "pathname": "/**"
-      },
-      {
-        "protocol": "https",
-        "hostname": "res.cloudinary.com",
-        "port": "",
-        "pathname": "/**"
-      }
-    ]
-  },
-  "reactStrictMode": true,
-  "swcMinify": true,
-  "experimental": {
-    "appDir": true,
-    "serverActions": true,
-    "serverComponentsExternalPackages": ["lucide-react"]
-  },
-  "output": "standalone",
-  "transpilePackages": ["@/components/ui", "@/components/terminal"] 
 };
 
 export default nextConfig;
