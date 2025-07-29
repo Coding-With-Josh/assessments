@@ -102,9 +102,9 @@ export function Terminal() {
   const restart = () => {
     setUsername("");
     setHistory([
-      // "Welcome to Udoka's Portfolio Terminal!",
-      // asciiArt,
-      // "Type 'help' to see all available commands."
+      "Welcome to Udoka's Portfolio Terminal!",
+      asciiArt,
+      "Type 'help' to see all available commands."
     ]);
     setInput("");
     setColor("#22c55e");
@@ -227,45 +227,26 @@ export function Terminal() {
             sizes="100vw"
             priority
           />
-          <div>
-            <div className="flex flex-col sm:block w-full">
-              <div className="block sm:hidden w-full mb-2">
-                <div
-                  className="mb-2 text-center text-base font-semibold select-none px-2"
-                  style={{ color }}
-                >
-                  Type a command below or click <span className='underline'>Help</span> for options!
-                </div>
-                <button
-                  onClick={() => executeCommand('help')}
-                  className="font-bold py-2 w-full rounded shadow text-base border focus:outline-none"
-                  style={{
-                    borderColor: color,
-                    background: color,
-                    color: '#fff',
-                    boxShadow: `0 0 0 1.5px ${color}33`
-                  }}
-                  title="Show available commands"
-                >
-                  Help
-                </button>
-              </div>
-              <div className="hidden sm:block absolute top-4 right-4 z-20"> 
-                <button
-                  onClick={() => executeCommand('help')}
-                  className="font-bold py-1 px-4 rounded shadow text-base border focus:outline-none"
-                  style={{
-                    borderColor: color,
-                    background: color,
-                    color: '#fff',
-                    boxShadow: `0 0 0 1.5px ${color}33`
-                  }}
-                  title="Show available commands"
-                >
-                  Help
-                </button>
-              </div>
-            </div>
+          {/* Floating Help Button and tip */}
+          <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-2">
+            <div className="block sm:hidden mb-1 text-xs px-2 py-1 rounded bg-black/80 text-white/80 font-semibold select-none" style={{border:'none',boxShadow:'none'}}>Need help? Tap the button!</div>
+            <button
+              onClick={() => executeCommand('help')}
+              className="rounded-full px-5 py-3 font-bold text-base shadow-lg transition-all duration-200 focus:outline-none border-none"
+              style={{
+                background: color,
+                color: '#fff',
+                boxShadow: `0 4px 24px 0 ${color}55, 0 0 0 1.5px ${color}33`,
+                opacity: 0.85,
+                cursor: 'pointer',
+                border: 'none',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
+              onMouseLeave={e => (e.currentTarget.style.opacity = '0.85')}
+              title="Show available commands"
+            >
+              Help
+            </button>
           </div>
           <div
             className="flex-1 flex flex-col overflow-y-auto custom-scrollbar pr-0 sm:pr-2 relative w-full min-h-0"
@@ -278,9 +259,9 @@ export function Terminal() {
           >
             <div
               className="hidden sm:block mb-2 sm:mb-4 mt-2 text-center text-base sm:text-lg font-semibold select-none px-2"
-              style={{ color }}
+              style={{ color, border: 'none', boxShadow: 'none' }}
             >
-              Type a command below or click <span className='underline'>Help</span> for options!
+              Type a command and press <span className='underline'>Enter</span>.
             </div>
             {history.map((line, i) => {
               if (i === 1) {
@@ -342,36 +323,21 @@ export function Terminal() {
             >
               <span
                 className="font-bold text-base sm:text-lg mb-1 sm:mb-0 sm:mr-2"
-                style={{ color, minWidth: 0 }}
+                style={{ color, minWidth: 0, border: 'none', boxShadow: 'none' }}
               >
                 {`visitor@udoka.dev:~$`}
               </span>
               <input
-                className="bg-neutral-800/80 rounded px-2 sm:px-3 py-2 outline-none flex-1 placeholder:text-neutral-400 text-base sm:text-lg border transition min-w-0 mb-2 sm:mb-0"
-                style={{ color, borderColor: color, boxShadow: `0 0 0 1.5px ${color}33` }}
+                className="bg-transparent rounded px-2 sm:px-3 py-2 outline-none flex-1 placeholder:text-neutral-400 text-base sm:text-lg transition min-w-0 mb-2 sm:mb-0 border-none shadow-none"
+                style={{ color, border: 'none', boxShadow: 'none' }}
                 value={input}
                 onChange={handleInput}
                 onKeyDown={handleKeyDown}
                 autoFocus
-                placeholder={"Try: help, about, projects, contact, color red..."}
+                placeholder={"Type a command and press Enter..."}
                 aria-label="Type a command and press Enter"
                 maxLength={64}
               />
-              <button
-                onClick={() => executeCommand(input.trim() || 'help')}
-                className="font-bold px-3 sm:px-4 py-2 rounded transition text-base border"
-                style={{
-                  borderColor: color,
-                  background: color,
-                  color: '#fff',
-                  boxShadow: `0 0 0 1.5px ${color}33`
-                }}
-                tabIndex={-1}
-                type="button"
-                aria-label="Run command"
-              >
-                ▶
-              </button>
             </div>
           </div>
         </div>
