@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState } from "react";
@@ -16,7 +15,6 @@ const COMMANDS: Command[] = commandsData;
 
 function getCommandOutput(
   cmd: string,
-  username: string,
   setColor: (color: string) => void,
   clearHistory: () => void,
   restart: () => void,
@@ -67,13 +65,8 @@ function getCommandOutput(
   }
 }
 
-
-
 export function Terminal() {
   const { theme, setTheme } = useTheme();
-  const [username, setUsername] = useState("");
-  const [modalInput, setModalInput] = useState("");
-  const [showModal, setShowModal] = useState(true);
   const [input, setInput] = useState("");
   const asciiArt = `
         
@@ -94,13 +87,8 @@ export function Terminal() {
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState<number | null>(null);
 
-  const clearHistory = () => setHistory([
-    // "Welcome to Udoka's Portfolio Terminal!",
-    // asciiArt,
-    // "Type 'help' to see all available commands."
-  ]);
+  const clearHistory = () => setHistory([]);
   const restart = () => {
-    setUsername("");
     setHistory([
       "Welcome to Udoka's Portfolio Terminal!",
       asciiArt,
@@ -108,8 +96,6 @@ export function Terminal() {
     ]);
     setInput("");
     setColor("#22c55e");
-    setShowModal(true);
-    setModalInput("");
   };
   const quit = () => {
     setHistory(["Goodbye! You can close the tab or refresh to start again."]);
@@ -118,7 +104,7 @@ export function Terminal() {
   const toggleTheme = () => setTheme(theme === "dark" ? "light" : "dark");
 
   const executeCommand = (cmd: string) => {
-    const output = getCommandOutput(cmd, username, setColor, clearHistory, restart, quit, toggleTheme);
+    const output = getCommandOutput(cmd, setColor, clearHistory, restart, quit, toggleTheme);
     if (cmd === "clear" || cmd === "cls") {
       setInput("");
       setHistoryIndex(null);
@@ -168,147 +154,95 @@ export function Terminal() {
     }
   };
 
-  const handleModalSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (modalInput.trim()) {
-      setUsername(modalInput.trim());
-      setShowModal(false);
-    }
-  };
-
   return (
     <div className="fixed inset-0 z-50 w-screen h-screen flex flex-col bg-gradient-to-br from-neutral-950 to-neutral-900 p-0 m-0 overflow-y-auto">
-      {showModal && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black/80 z-50">
-          <form onSubmit={handleModalSubmit} className="bg-neutral-900 rounded-2xl shadow-2xl p-8 flex flex-col gap-4 min-w-[320px] max-w-xs w-full border border-neutral-700">
-            <h2 className="text-2xl font-extrabold text-green-400 mb-1 text-center">Welcome to Udoka's Terminal</h2>
-            <p className="text-base text-white/80 text-center">This interactive terminal lets you explore Udoka's portfolio in a fun, chat-like way.<br/>No coding experience needed!</p>
-            <input
-              className="p-3 rounded bg-neutral-800 text-white outline-none border border-neutral-700 focus:border-green-400/10 text-lg text-center"
-              value={modalInput}
-              onChange={e => setModalInput(e.target.value)}
-              placeholder="Enter a nickname to begin..."
-              autoFocus
-              maxLength={24}
-              required
-            />
-            <button
-              type="submit"
-              className="font-bold py-2 px-4 rounded transition text-lg border"
-              style={{
-                borderColor: color,
-                background: color,
-                color: '#fff',
-                boxShadow: `0 0 0 1.5px ${color}33`
-              }}
-            >
-              Start Exploring
-            </button>
-            <div className="text-xs text-white/40 text-center mt-2">No data is collected. This is just for fun!</div>
-          </form>
+      <div
+        className="rounded-2xl font-mono p-2 sm:p-4 flex flex-col transition-all duration-300 relative w-full h-full min-h-0 overflow-y-auto"
+        style={{
+          height: '100dvh',
+          maxHeight: '100dvh',
+          minHeight: 0,
+          boxSizing: 'border-box',
+          overflowY: 'auto',
+        }}
+      >
+        <Image
+          src={require("@/assets/images/sir-udoka.jpeg")}
+          alt="bg"
+          className="absolute inset-0 w-full h-full object-cover opacity-10 pointer-events-none select-none rounded-2xl"
+          style={{ zIndex: 0 }}
+          sizes="100vw"
+          priority
+        />
+        {/* Floating Help Button and tip */}
+        <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-2">
+          <div className="block sm:hidden mb-1 text-xs px-2 py-1 rounded bg-black/80 text-white/80 font-semibold select-none" style={{border:'none',boxShadow:'none'}}>Need help? Tap the button!</div>
+          <button
+            onClick={() => executeCommand('help')}
+            className="rounded-full px-5 py-3 font-bold text-base shadow-lg transition-all duration-200 focus:outline-none border-none"
+            style={{
+              background: color,
+              color: '#fff',
+              boxShadow: `0 4px 24px 0 ${color}55, 0 0 0 1.5px ${color}33`,
+              opacity: 0.85,
+              cursor: 'pointer',
+              border: 'none',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
+            onMouseLeave={e => (e.currentTarget.style.opacity = '0.85')}
+            title="Show available commands"
+          >
+            Help
+          </button>
         </div>
-      )}
-      {!showModal && (
         <div
-          className="rounded-2xl font-mono p-2 sm:p-4 flex flex-col transition-all duration-300 relative w-full h-full min-h-0 overflow-y-auto"
+          className="flex-1 flex flex-col overflow-y-auto custom-scrollbar pr-0 sm:pr-2 relative w-full min-h-0"
           style={{
-            height: '100dvh',
+            zIndex: 1,
             maxHeight: '100dvh',
             minHeight: 0,
-            boxSizing: 'border-box',
-            overflowY: 'auto',
+            paddingBottom: 'env(safe-area-inset-bottom, 0px)',
           }}
         >
-          <Image
-            src={require("@/assets/images/sir-udoka.jpeg")}
-            alt="bg"
-            className="absolute inset-0 w-full h-full object-cover opacity-10 pointer-events-none select-none rounded-2xl"
-            style={{ zIndex: 0 }}
-            sizes="100vw"
-            priority
-          />
-          {/* Floating Help Button and tip */}
-          <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-2">
-            <div className="block sm:hidden mb-1 text-xs px-2 py-1 rounded bg-black/80 text-white/80 font-semibold select-none" style={{border:'none',boxShadow:'none'}}>Need help? Tap the button!</div>
-            <button
-              onClick={() => executeCommand('help')}
-              className="rounded-full px-5 py-3 font-bold text-base shadow-lg transition-all duration-200 focus:outline-none border-none"
-              style={{
-                background: color,
-                color: '#fff',
-                boxShadow: `0 4px 24px 0 ${color}55, 0 0 0 1.5px ${color}33`,
-                opacity: 0.85,
-                cursor: 'pointer',
-                border: 'none',
-              }}
-              onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
-              onMouseLeave={e => (e.currentTarget.style.opacity = '0.85')}
-              title="Show available commands"
-            >
-              Help
-            </button>
-          </div>
           <div
-            className="flex-1 flex flex-col overflow-y-auto custom-scrollbar pr-0 sm:pr-2 relative w-full min-h-0"
-            style={{
-              zIndex: 1,
-              maxHeight: '100dvh',
-              minHeight: 0,
-              paddingBottom: 'env(safe-area-inset-bottom, 0px)',
-            }}
+            className="hidden sm:block mb-2 sm:mb-4 mt-2 text-center text-base sm:text-lg font-semibold select-none px-2"
+            style={{ color, border: 'none', boxShadow: 'none' }}
           >
-            <div
-              className="hidden sm:block mb-2 sm:mb-4 mt-2 text-center text-base sm:text-lg font-semibold select-none px-2"
-              style={{ color, border: 'none', boxShadow: 'none' }}
-            >
-              Type a command and press <span className='underline'>Enter</span>.
-            </div>
-            {history.map((line, i) => {
-              if (i === 1) {
-                return (
-                  <pre
-                    key={i}
-                    style={{
-                      color,
-                      fontSize: '1.05em',
-                      margin: '40px 0 40px 0',
-                      lineHeight: 1.35,
-                      overflowX: 'auto',
-                      whiteSpace: 'pre',
-                      letterSpacing: '0.04em',
-                      padding: '16px 0',
-                      fontFamily: 'Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
-                      background: 'transparent',
-                    }}
-                    className="block font-mono select-none"
-                  >
-                    {line}
-                  </pre>
-                );
-              }
-              // If this is a 'Command not found' output, render in red (exact match)
-              if (
-                typeof line === 'string' &&
-                /^Command not found: .+/.test(line.trim())
-              ) {
-                return (
-                  <div
-                    key={i}
-                    style={{
-                      color: '#ef4444',
-                      whiteSpace: "pre-line",
-                      marginBottom: i === 0 ? 20 : (i === 2 ? 24 : 0),
-                    }}
-                  >
-                    {line}
-                  </div>
-                );
-              }
+            Type a command and press <span className='underline'>Enter</span>.
+          </div>
+          {history.map((line, i) => {
+            if (i === 1) {
+              return (
+                <pre
+                  key={i}
+                  style={{
+                    color,
+                    fontSize: '1.05em',
+                    margin: '40px 0 40px 0',
+                    lineHeight: 1.35,
+                    overflowX: 'auto',
+                    whiteSpace: 'pre',
+                    letterSpacing: '0.04em',
+                    padding: '16px 0',
+                    fontFamily: 'Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
+                    background: 'transparent',
+                  }}
+                  className="block font-mono select-none"
+                >
+                  {line}
+                </pre>
+              );
+            }
+            // If this is a 'Command not found' output, render in red (exact match)
+            if (
+              typeof line === 'string' &&
+              /^Command not found: .+/.test(line.trim())
+            ) {
               return (
                 <div
                   key={i}
                   style={{
-                    color,
+                    color: '#ef4444',
                     whiteSpace: "pre-line",
                     marginBottom: i === 0 ? 20 : (i === 2 ? 24 : 0),
                   }}
@@ -316,32 +250,44 @@ export function Terminal() {
                   {line}
                 </div>
               );
-            })}
-            <div
-              className="flex flex-col sm:flex-row items-stretch sm:items-center mt-4 sm:mt-6 mb-2 sm:mb-4 gap-2 w-full"
-              style={{ zIndex: 2 }}
-            >
-              <span
-                className="font-bold text-base sm:text-lg mb-1 sm:mb-0 sm:mr-2"
-                style={{ color, minWidth: 0, border: 'none', boxShadow: 'none' }}
+            }
+            return (
+              <div
+                key={i}
+                style={{
+                  color,
+                  whiteSpace: "pre-line",
+                  marginBottom: i === 0 ? 20 : (i === 2 ? 24 : 0),
+                }}
               >
-                {`visitor@udoka.dev:~$`}
-              </span>
-              <input
-                className="bg-transparent rounded px-2 sm:px-3 py-2 outline-none flex-1 placeholder:text-neutral-400 text-base sm:text-lg transition min-w-0 mb-2 sm:mb-0 border-none shadow-none"
-                style={{ color, border: 'none', boxShadow: 'none' }}
-                value={input}
-                onChange={handleInput}
-                onKeyDown={handleKeyDown}
-                autoFocus
-                placeholder={"Type a command and press Enter..."}
-                aria-label="Type a command and press Enter"
-                maxLength={64}
-              />
-            </div>
+                {line}
+              </div>
+            );
+          })}
+          <div
+            className="flex flex-col sm:flex-row items-stretch sm:items-center mt-4 sm:mt-6 mb-2 sm:mb-4 gap-2 w-full"
+            style={{ zIndex: 2 }}
+          >
+            <span
+              className="font-bold text-base sm:text-lg mb-1 sm:mb-0 sm:mr-2"
+              style={{ color, minWidth: 0, border: 'none', boxShadow: 'none' }}
+            >
+              {`visitor@udoka.dev:~$`}
+            </span>
+            <input
+              className="bg-transparent rounded px-2 sm:px-3 py-2 outline-none flex-1 placeholder:text-neutral-400 text-base sm:text-lg transition min-w-0 mb-2 sm:mb-0 border-none shadow-none"
+              style={{ color, border: 'none', boxShadow: 'none' }}
+              value={input}
+              onChange={handleInput}
+              onKeyDown={handleKeyDown}
+              autoFocus
+              placeholder={"Type a command and press Enter..."}
+              aria-label="Type a command and press Enter"
+              maxLength={64}
+            />
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }
