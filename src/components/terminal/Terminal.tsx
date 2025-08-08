@@ -158,15 +158,16 @@ const asciiArt = `
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      if (showSuggestions && suggestions.length > 0) {
-        e.preventDefault();
-        setInput(suggestions[selectedSuggestionIndex].name + " ");
-        setShowSuggestions(false);
-      } else if (input.trim()) {
+      if (input.trim()) {
         executeCommand(input.trim());
         setInput("");
         setHistoryIndex(null);
+        setShowSuggestions(false);
       }
+    } else if (e.key === "Tab" && showSuggestions && suggestions.length > 0) {
+      e.preventDefault();
+      setInput(suggestions[selectedSuggestionIndex].name + " ");
+      setShowSuggestions(false);
     } else if (e.key === "ArrowUp") {
       if (showSuggestions) {
         e.preventDefault();

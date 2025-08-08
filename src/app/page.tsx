@@ -23,14 +23,14 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col md:flex-row h-screen w-full bg-background overflow-hidden">
+    <div className="flex flex-col md:flex-row h-screen w-full bg-background overflow-hidden gap-0 md:gap-4 p-2 md:p-4">
       {/* Left Side - Person Profile */}
-      <div className="w-full md:w-1/3 lg:w-1/4 border-b md:border-b-0 md:border-r border-neutral-800 overflow-y-auto min-h-[300px] max-h-[50vh] md:max-h-full">
+      <div className="w-full md:w-1/3 lg:w-1/4 border-b md:border-b-0 md:border-r border-neutral-800 overflow-y-auto min-h-[300px] max-h-[50vh] md:max-h-screen flex-shrink-0 p-2 md:p-0">
         <PerosonDetails person={person} />
       </div>
 
       {/* Right Side - Terminal */}
-      <div className="w-full md:w-2/3 lg:w-3/4 flex-1 min-h-[300px]">
+      <div className="w-full md:w-2/3 lg:w-3/4 flex-1 min-h-[300px] max-h-screen overflow-y-auto">
         <Terminal />
       </div>
     </div>
