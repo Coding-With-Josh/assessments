@@ -1,10 +1,38 @@
-
 import { Terminal } from "@/components/terminal/Terminal";
+import { PerosonDetails } from "@/components/persondetails";
 
 export default function Home() {
+  const person = {
+    name: "Udoka",
+    title: "Software Engineer",
+    image: "/../assets/images/sir-udoka.jpeg",
+    bio: "Passionate developer with 3+ years of experience building web applications. Specialized in React, Next.js, and Node.js.",
+    skills: [
+      "JavaScript/TypeScript",
+      "React/Next.js",
+      "Node.js",
+      "UI/UX Design",
+      "Cloud Infrastructure"
+    ],
+    socialLinks: {
+      twitter: "https://twitter.com/udoka",
+      github: "https://github.com/udoka",
+      linkedin: "https://linkedin.com/in/udoka",
+      email: "udoka@example.com"
+    }
+  };
+
   return (
-    <div className="bg-background min-h-screen overflow-x-hidden overflow-y-scroll">
-      <Terminal />
+    <div className="flex h-screen w-full bg-background overflow-hidden">
+      {/* Left Side - Person Profile */}
+      <div className="w-1/4 border-r border-neutral-800 overflow-y-auto">
+        <PerosonDetails person={person} />
+      </div>
+      
+      {/* Right Side - Terminal */}
+      <div className="w-3/4">
+        <Terminal />
+      </div>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 import commandsData from "./commands.json";
@@ -68,12 +68,16 @@ function getCommandOutput(
 export function Terminal() {
   const { theme, setTheme } = useTheme();
   const [input, setInput] = useState("");
-  const asciiArt = `   __  ______  ____  __ __ ___         ___    __  ___
-  / / / / __ \\/ __ \\/ //_//   |       /   |  /  |/  /
- / / / / / / / / / / ,<  / /| |      / /| | / /|_/ / 
-/ /_/ / /_/ / /_/ / /| |/ ___ |     / ___ |/ /  / /  
-\\____/_____/\\____/_/ |_/_/  |_|____/_/  |_/_/  /_/   
-                             /_____/                 `;
+const asciiArt = `
+██╗   ██╗██████╗  ██████╗ ██╗  ██╗ █████╗      █████╗ ███╗   ███╗
+██║   ██║██╔══██╗██╔═══██╗██║ ██╔╝██╔══██╗    ██╔══██╗████╗ ████║
+██║   ██║██║  ██║██║   ██║█████╔╝ ███████║    ███████║██╔████╔██║
+██║   ██║██║  ██║██║   ██║██╔═██╗ ██╔══██║    ██╔══██║██║╚██╔╝██║
+╚██████╔╝██████╔╝╚██████╔╝██║  ██╗██║  ██║    ██║  ██║██║ ╚═╝ ██║
+ ╚═════╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝    ╚═╝  ╚═╝╚═╝     ╚═╝
+`;
+
+
   const [history, setHistory] = useState<string[]>([
     "Welcome to Udoka's Portfolio Terminal!",
     asciiArt,
@@ -82,6 +86,38 @@ export function Terminal() {
   const [color, setColor] = useState<string>("#22c55e");
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState<number | null>(null);
+
+  // Autocomplete state
+  const [suggestions, setSuggestions] = useState<Command[]>([]);
+  const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(0);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const suggestionsRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Update suggestions when input changes
+  useEffect(() => {
+    if (input.trim().length > 0) {
+      const filtered = COMMANDS.filter(cmd => 
+        cmd.name.toLowerCase().includes(input.toLowerCase())
+      );
+      setSuggestions(filtered);
+      setShowSuggestions(filtered.length > 0);
+      setSelectedSuggestionIndex(0);
+    } else {
+      setShowSuggestions(false);
+    }
+  }, [input]);
+
+  // Handle clicks outside suggestions
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (suggestionsRef.current && !suggestionsRef.current.contains(event.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const clearHistory = () => setHistory([]);
   const restart = () => {
@@ -121,48 +157,64 @@ export function Terminal() {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && input.trim()) {
-      executeCommand(input.trim());
-      setInput("");
-      setHistoryIndex(null);
+    if (e.key === "Enter") {
+      if (showSuggestions && suggestions.length > 0) {
+        e.preventDefault();
+        setInput(suggestions[selectedSuggestionIndex].name + " ");
+        setShowSuggestions(false);
+      } else if (input.trim()) {
+        executeCommand(input.trim());
+        setInput("");
+        setHistoryIndex(null);
+      }
     } else if (e.key === "ArrowUp") {
-      if (commandHistory.length === 0) return;
-      setHistoryIndex(prev => {
-        const newIndex = prev === null ? commandHistory.length - 1 : Math.max(0, prev - 1);
-        setInput(commandHistory[newIndex] || "");
-        return newIndex;
-      });
-      e.preventDefault();
-    } else if (e.key === "ArrowDown") {
-      if (commandHistory.length === 0) return;
-      setHistoryIndex(prev => {
-        if (prev === null) return null;
-        const newIndex = prev + 1;
-        if (newIndex >= commandHistory.length) {
-          setInput("");
-          return null;
-        } else {
+      if (showSuggestions) {
+        e.preventDefault();
+        setSelectedSuggestionIndex(prev => Math.max(0, prev - 1));
+      } else if (commandHistory.length > 0) {
+        setHistoryIndex(prev => {
+          const newIndex = prev === null ? commandHistory.length - 1 : Math.max(0, prev - 1);
           setInput(commandHistory[newIndex] || "");
           return newIndex;
-        }
-      });
+        });
+        e.preventDefault();
+      }
+    } else if (e.key === "ArrowDown") {
+      if (showSuggestions) {
+        e.preventDefault();
+        setSelectedSuggestionIndex(prev => Math.min(suggestions.length - 1, prev + 1));
+      } else if (commandHistory.length > 0) {
+        setHistoryIndex(prev => {
+          if (prev === null) return null;
+          const newIndex = prev + 1;
+          if (newIndex >= commandHistory.length) {
+            setInput("");
+            return null;
+          } else {
+            setInput(commandHistory[newIndex] || "");
+            return newIndex;
+          }
+        });
+        e.preventDefault();
+      }
+    } else if (e.key === "Tab" && showSuggestions && suggestions.length > 0) {
       e.preventDefault();
+      setInput(suggestions[selectedSuggestionIndex].name + " ");
+      setShowSuggestions(false);
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-50 w-screen h-screen flex flex-col bg-neutral-950 p-0 m-0 overflow-y-auto">
+  const handleSuggestionClick = (cmd: string) => {
+    setInput(cmd + " ");
+    setShowSuggestions(false);
+    inputRef.current?.focus();
+  };
+
+   return (
+    <div className="h-full w-full flex flex-col bg-neutral-950 overflow-y-auto">
       <div className="font-mono p-1 sm:p-2 flex flex-col relative w-full h-full min-h-0 overflow-y-auto">
-        <Image
-          src={require("@/assets/images/sir-udoka.jpeg")}
-          alt="bg"
-          className="absolute inset-0 w-full h-full object-cover opacity-10 pointer-events-none select-none"
-          style={{ zIndex: 0 }}
-          sizes="100vw"
-          priority
-        />
-        
-        <div className="fixed bottom-2 right-2 z-50">
+        {/* Help button positioned relative to terminal */}
+        <div className="absolute bottom-2 right-2 z-50">
           <button
             onClick={() => executeCommand('help')}
             className="rounded px-3 py-2 font-mono text-sm"
@@ -180,24 +232,25 @@ export function Terminal() {
         </div>
 
         <div className="flex-1 flex flex-col overflow-y-auto pr-0 sm:pr-1 relative w-full min-h-0">
-          {history.map((line, i) => {
-            if (i === 1) {
-              return (
-                <pre
-                  key={i}
-                  style={{
-                    color,
-                    fontSize: '0.9em',
-                    margin: '8px 0',
-                    lineHeight: 1.2,
-                    fontFamily: 'monospace',
-                  }}
-                  className="whitespace-pre"
-                >
-                  {line}
-                </pre>
-              );
-            }
+{history.map((line, i) => {
+  if (i === 1) {  // This is where your asciiArt is rendered
+    return (
+      <pre
+        key={i}
+        style={{
+          color,
+          fontSize: '0.6em',  // Smaller font for better ASCII art display
+          margin: '8px 0',
+          lineHeight: 1.1,     // Tighter line spacing
+          fontFamily: 'monospace',
+          fontWeight: 'bold',
+        }}
+        className="whitespace-pre"
+      >
+        {line}
+      </pre>
+    );
+  }
             if (typeof line === 'string' && /^Command not found: .+/.test(line.trim())) {
               return (
                 <div
@@ -228,23 +281,43 @@ export function Terminal() {
             );
           })}
           
-          <div className="flex items-center mt-1 gap-1 w-full">
+          <div className="flex items-center mt-1 gap-1 w-full relative">
             <span
               className="font-mono text-sm"
               style={{ color }}
             >
               visitor@udoka.dev:~$
             </span>
-            <input
-              className="bg-transparent px-1 py-1 outline-none flex-1 text-sm"
-              style={{ color }}
-              value={input}
-              onChange={handleInput}
-              onKeyDown={handleKeyDown}
-              autoFocus
-              spellCheck={false}
-              maxLength={64}
-            />
+            <div className="flex-1 relative">
+              <input
+                ref={inputRef}
+                className="bg-transparent px-1 py-1 outline-none flex-1 text-sm w-full"
+                style={{ color }}
+                value={input}
+                onChange={handleInput}
+                onKeyDown={handleKeyDown}
+                autoFocus
+                spellCheck={false}
+                maxLength={64}
+              />
+              {showSuggestions && suggestions.length > 0 && (
+                <div
+                  ref={suggestionsRef}
+                  className="absolute bottom-full left-0 w-fit max-h-60 overflow-y-auto bg-neutral-900 border border-neutral-700 rounded-md shadow-lg z-50"
+                >
+                  {suggestions.map((cmd, index) => (
+                    <div
+                      key={cmd.name}
+                      className={`px-3 py-2 cursor-pointer flex items-center ${index === selectedSuggestionIndex ? 'bg-neutral-700' : ''}`}
+                      onClick={() => handleSuggestionClick(cmd.name)}
+                    >
+                      <span className="text-green-400 mr-2">{cmd.name}</span>
+                      <span className="text-neutral-400 text-xs">{cmd.description}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
