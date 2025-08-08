@@ -16,21 +16,21 @@ export default function Home() {
     ],
     socialLinks: {
       twitter: "https://twitter.com/udoka",
-      github: "https://github.com/udoka",
+      github: "https://github.com/udoka", 
       linkedin: "https://linkedin.com/in/udoka",
       email: "udoka@example.com"
     }
   };
 
   return (
-    <div className="flex h-screen w-full bg-background overflow-hidden">
+    <div className="flex flex-col md:flex-row h-screen w-full bg-background overflow-hidden">
       {/* Left Side - Person Profile */}
-      <div className="w-1/4 border-r border-neutral-800 overflow-y-auto">
+      <div className="w-full md:w-1/3 lg:w-1/4 border-b md:border-b-0 md:border-r border-neutral-800 overflow-y-auto min-h-[300px] max-h-[50vh] md:max-h-full">
         <PerosonDetails person={person} />
       </div>
-      
+
       {/* Right Side - Terminal */}
-      <div className="w-3/4">
+      <div className="w-full md:w-2/3 lg:w-3/4 flex-1 min-h-[300px]">
         <Terminal />
       </div>
     </div>
